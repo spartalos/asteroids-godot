@@ -4,8 +4,8 @@ signal message_hidden
 
 var message_visible = false
 
-export var getReadyMessage = "Get Ready!"
-export var gameOverMessage = "Game Over!"
+@export var getReadyMessage = "Get Ready!"
+@export var gameOverMessage = "Game Over!"
 var scoreLabel = "Score: %d"
 var score = 0
 
