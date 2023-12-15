@@ -1,9 +1,9 @@
 extends Node
 
-export(PackedScene) var asteroid_scene
-export var numOfAsteroids = 6
-export var numOfAsteroidBreaksWhenDestroyed = 2
-export var addAsteroidOnScore = 3000
+@export var asteroid_scene: PackedScene
+@export var numOfAsteroids = 6
+@export var numOfAsteroidBreaksWhenDestroyed = 2
+@export var addAsteroidOnScore = 3000
 var asteroids: Array
 var smallAsteroidsDestroyed = 0
 
@@ -21,7 +21,7 @@ func startGame():
 		createAsteroidInstance()
 
 func createAsteroidInstance():
-	var instance = asteroid_scene.instance()
+	var instance = asteroid_scene.instantiate()
 	asteroids.push_front(instance)
 	add_child(instance)
 	return instance
@@ -40,8 +40,8 @@ func gameOver():
 	asteroids = Array()
 	$HUD.show_message($HUD.gameOverMessage)
 
-func _on_Bullet_destroy(bullet: KinematicBody2D, asteroid: KinematicBody2D):
-	if asteroid.scale.x > 1:
+func _on_Bullet_destroy(bullet: CharacterBody2D, asteroid: CharacterBody2D):
+	if asteroid.scale.x > 1: 
 		breakAsteroid(bullet.position, asteroid.scale)
 	else:
 		smallAsteroidsDestroyed += 1
@@ -59,5 +59,5 @@ func _on_Bullet_destroy(bullet: KinematicBody2D, asteroid: KinematicBody2D):
 func _on_HUD_message_hidden(message):
 	startGame()
 
-func _on_Player_hit():
+func _on_player_hit():
 	gameOver()

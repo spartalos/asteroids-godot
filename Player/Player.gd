@@ -1,10 +1,10 @@
-extends KinematicBody2D
+extends CharacterBody2D
 
 var speed = 0
-var velocity = Vector2.ZERO
+var vel = Vector2.ZERO
 var screen_size
 
-export var MAX_SPEED = 200
+@export var MAX_SPEED = 200
 var MIN_SPEED = MAX_SPEED * -1
 
 var bullet = preload("res://Player/Bullet.tscn")
@@ -28,16 +28,16 @@ func makeInvulnarable():
 func resetPlayerVectors():
 	position.x = screen_size.x / 2
 	position.y = screen_size.y / 2
-	velocity = Vector2.ZERO
+	vel = Vector2.ZERO
 	speed = 0
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta):
-	velocity = Vector2.UP.rotated(rotation)
+	vel = Vector2.UP.rotated(rotation)
 	handleControls(delta)
-	var collision_info = move_and_collide(velocity * speed * delta)
+	var collision_info = move_and_collide(vel * speed * delta)
 	if collision_info:
-		hit(collision_info)
+		hitFunc(collision_info)
 	resetAtOutOfBounds()
 	$WeaponNode.look_at(position)
 
@@ -45,7 +45,7 @@ func handleControls(delta):
 	if Input.is_action_pressed("move_up"):
 		if speed <= MAX_SPEED:
 			speed += 5
-		$AnimatedSprite.animation = "full_thrust"
+		$AnimatedSprite2D.animation = "full_thrust"
 	if Input.is_action_pressed("move_down") && speed >= MIN_SPEED:
 		speed -= 5
 	if Input.is_action_pressed("move_left"):
@@ -53,16 +53,16 @@ func handleControls(delta):
 	if Input.is_action_pressed("move_right"):
 		rotation += PI * delta
 	if Input.is_action_just_released("move_up"):
-		$AnimatedSprite.animation = "no_thrust"
+		$AnimatedSprite2D.animation = "no_thrust"
 	if Input.is_action_just_pressed("shoot"):
 		shoot()
 
-func shoot():
-	var bullet_instance = bullet.instance()
-	bullet_instance.position = $WeaponNode/Position2D.global_position
-	bullet_instance.rotation = $WeaponNode/Position2D.global_rotation
-	bullet_instance.velocity = velocity
-	bullet_instance.connect("destroy", get_parent() , "_on_Bullet_destroy")
+func shoot(): 
+	var bullet_instance = bullet.instantiate()
+	bullet_instance.position = $WeaponNode/Marker2D.global_position
+	bullet_instance.rotation = $WeaponNode/Marker2D.global_rotation
+	bullet_instance.vel = vel
+	bullet_instance.connect("destroy", Callable(get_parent(), "_on_Bullet_destroy"))
 	get_parent().add_child(bullet_instance)
 		
 func resetAtOutOfBounds():
@@ -76,7 +76,7 @@ func resetAtOutOfBounds():
 		position.y = screen_size.y
 
 
-func hit(collision):
+func hitFunc(collision):
 	emit_signal("hit")
 
 
